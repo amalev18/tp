@@ -6,11 +6,13 @@ import org.scalatest.funsuite.AnyFunSuite
 class ClimateServiceTest extends AnyFunSuite {
   test("containsWordGlobalWarming - non climate related words should return false") {
     assert( ClimateService.isClimateRelated("pizza") == false)
+    assert( ClimateService.isClimateRelated("The sun is warming my skin") == false)
   }
 
   test("isClimateRelated - climate related words should return true") {
     assert(ClimateService.isClimateRelated("climate change") == true)
     assert(ClimateService.isClimateRelated("IPCC"))
+    assert(ClimateService.isClimateRelated("global warming") == true)
   }
 
   //@TODO
@@ -24,6 +26,21 @@ class ClimateServiceTest extends AnyFunSuite {
     val co2RecordWithType = CO2Record(firstRecord._1, firstRecord._2, firstRecord._3)
     val co2RecordWithType2 = CO2Record(secondRecord._1, secondRecord._2, secondRecord._3)
     val output = List(Some(co2RecordWithType), Some(co2RecordWithType2))
+
+    // we call our function here to test our input and output
+    assert(ClimateService.parseRawData(list1) == output)
+  }
+
+  test("parseRawDataNegativeValue") {
+    // our inputs
+    val firstRecord = (2003, 1, -355.2)
+    val secondRecord = (2004, 1, -375.2)
+    val list1 = List(firstRecord, secondRecord)
+
+    // our output of our method "parseRawData"
+    val co2RecordWithType = CO2Record(firstRecord._1, firstRecord._2, firstRecord._3)
+    val co2RecordWithType2 = CO2Record(secondRecord._1, secondRecord._2, secondRecord._3)
+    val output = List(None, None)
 
     // we call our function here to test our input and output
     assert(ClimateService.parseRawData(list1) == output)

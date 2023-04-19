@@ -16,7 +16,12 @@ object ClimateService {
    * @param description "my awesome sentence contains a key word like climate change"
    * @return Boolean True
    */
-  def isClimateRelated(description: String): Boolean = ???
+  def isClimateRelated(description: String): Boolean = {
+    List("IPCC", "climate change", "global warming").filter(description.contains).nonEmpty
+  }
+
+
+
 
   /**
    * parse a list of raw data and transport it with type into a list of CO2Record
@@ -26,8 +31,18 @@ object ClimateService {
    * you can access to Tuple with myTuple._1, myTuple._2, myTuple._3
    */
   def parseRawData(list: List[(Int, Int, Double)]) : List[Option[CO2Record]] = {
-    list.map { record => ??? }
-    ???
+    /**
+     * Wrap the ppm value. Filter out the correct values for ppm. Lastly transforming the value using map.
+     * Option(record._3).filter(CO2Record(record._1, record._2, _).isValidPpmValue).map(_ => CO2Record(record._1, record._2, record._3))
+     * First but unnecessairy solution
+     */
+    list.map { record =>
+      if(CO2Record(record._1, record._2, record._3).isValidPpmValue) {
+        Some(CO2Record(record._1, record._2, record._3))
+      }else
+        None
+    }
+
   }
 
   /**
