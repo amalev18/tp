@@ -51,15 +51,42 @@ object ClimateService {
    * @param list
    * @return a list
    */
-  def filterDecemberData(list: List[Option[CO2Record]]) : List[CO2Record] = ???
+  def filterDecemberData(list: List[Option[CO2Record]]) : List[CO2Record] = {
+    val noDecemberList = list.flatMap{
+      case Some(record)
+        if record.month != 12 => Some(record)
+      case _ => None
+    }
+    noDecemberList
+  }
 
 
   /**
    * **Tips**: look at the read me to find some tips for this function
    */
-  def getMinMax(list: List[CO2Record]) : (Double, Double) = ???
+  def getMinMax(list: List[CO2Record]) : (Double, Double) = {
+    val max = list.maxBy(_.ppm).ppm
+    val min = list.minBy(_.ppm).ppm
+    (min, max)
+  }
 
-  def getMinMaxByYear(list: List[CO2Record], year: Int) : (Double, Double) = ???
+  /**
+   * get the min and max value for a specific year
+   */
+  def getMinMaxByYear(list: List[CO2Record], year: Int) : (Double, Double) = {
+    val listForYear = list.filter(_.year==year)
+    val minMax = getMinMax(listForYear)
+    (minMax)
+  }
+
+  /**
+   * get the difference between the min and max value
+   */
+  def diffMinMax(value1: Double, value2: Double) : Double = {
+    val diff = math.abs(value2 - value1)
+    val roundedDiff = BigDecimal(diff).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
+    roundedDiff
+  }
 
   /**
    * use this function side src/main/scala/com/polomarcus/main/Main (with sbt run)
@@ -70,9 +97,8 @@ object ClimateService {
    * @param list
    */
   def showCO2Data(list: List[Option[CO2Record]]): Unit = {
-    logger.info("Call ClimateService.filterDecemberData here")
-
-    logger.info("Call record.show function here inside a map function")
+    val noDecemberData = filterDecemberData(list)
+    logger.info(noDecemberData.map(_.show()).mkString("\n"))
   }
 
   /**
